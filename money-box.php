@@ -45,36 +45,31 @@ bei pridėti įvertinimą ar galime jas įpirkti ar ne. Pinigų suma saugoma sau
         <div class="col">
             <p class="mb-0">Kiek pinigų dėsime į taupyklę?</p>
             <form method="GET" action="money-box.php">
-                <input name="moneyIN" class="w-100">
+                <input name="moneyIN" class="w-100" value="<?php echo isset($_GET["moneyIN"]) ? $_GET["moneyIN"] : ""  ; ?>">
                 <button name="ideti" class="btn btn-primary" type="submit">Įdėti</button>
             </form>
-            <?php echo "Taupyklėje yra: ".$_COOKIE['suma']."€";
-                 if(isset($_GET['ideti'])){
-                    $prideti = $_GET['moneyIN'];
-                    if(is_numeric($prideti)) {
-                        $prideti = $prideti + $_COOKIE['suma'];
-                        setcookie("suma", $prideti, time() + (86400*30), "money-box.php" );
-                    }
+            <?php
+              if(isset($_GET['ideti'])){
+                $prideti = $_GET['moneyIN'];
+                if(is_numeric($prideti)) {
+                  $prideti = $prideti + $_COOKIE['suma'];
+                  echo "Taupyklėje yra: ".$prideti."€";
+                  setcookie("suma", $prideti, time() + (86400*30), "money-box.php" );
                 }
+              }
             ?>
         </div>
         <div class="col">
-
+        <?php
+           foreach($items as $name) {
+            echo $name['name'];
+           }
+        ?>
         </div>
     </div> 
 </div>
 
 <?php
-
-    // adds money to cookie
-
-    if(isset($_GET['ideti'])){
-        $prideti = $_GET['moneyIN'];
-        if(is_numeric($prideti)) {
-            $prideti = $prideti + $_COOKIE['suma'];
-            setcookie("suma", $prideti, time() + (86400*30), "money-box.php" );
-        }
-    }
 ?>
     
 </body>
