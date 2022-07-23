@@ -13,11 +13,21 @@
 bei pridėti įvertinimą ar galime jas įpirkti ar ne. Pinigų suma saugoma sausainėlyje. -->
 <?php 
 
-
     // checks if the cookie is created if not creates one
     if(!isset($_COOKIE['suma'])) {
-        setcookie("suma", 0, time() + (86400*30), "money-box.php" );
-        $_COOKIE['suma'] = 0;
+      setcookie("suma", 0, time() + (86400*30), "money-box.php");
+      $_COOKIE['suma'] = 0;
+    }
+    // sets $prideti value so it displays below input
+    $suma1 = $_COOKIE['suma'];
+
+    // adds cash to money bank and stores the value in cookie
+    if(isset($_GET['ideti'])){
+      $prideti = $_GET['moneyIN'];
+      if(is_numeric($prideti) && $prideti > 0 && strlen(substr(strrchr($prideti, "."), 1)) <3) {
+        $suma1 = $prideti + $_COOKIE['suma'];
+        setcookie("suma", $suma1, time() + (86400*30), "money-box.php");
+      }
     }
 
   $items = [
@@ -40,7 +50,16 @@ bei pridėti įvertinimą ar galime jas įpirkti ar ne. Pinigų suma saugoma sau
   ];
 ?>
 <div class="container">
-    <h1 class="text-center">Money bank</h1>
+    <h1 class="text-center mb-5">Money bank</h1>
+    <?php 
+      if(isset($_GET['ideti'])){
+        $prideti = $_GET['moneyIN'];
+        if(!is_numeric($prideti) || $prideti <= 0 || strlen(substr(strrchr($prideti, "."), 1)) >=3) {
+          echo '<div class="alert alert-danger w-100">Please input a positive intager with only two decimal places!</div>';
+        }
+      }
+    ?>
+      
     <div class="row">
         <div class="col">
             <p class="mb-0">Kiek pinigų dėsime į taupyklę?</p>
@@ -48,29 +67,19 @@ bei pridėti įvertinimą ar galime jas įpirkti ar ne. Pinigų suma saugoma sau
                 <input name="moneyIN" class="w-100" value="<?php echo isset($_GET["moneyIN"]) ? $_GET["moneyIN"] : ""  ; ?>">
                 <button name="ideti" class="btn btn-primary" type="submit">Įdėti</button>
             </form>
-            <?php
-              if(isset($_GET['ideti'])){
-                $prideti = $_GET['moneyIN'];
-                if(is_numeric($prideti)) {
-                  $prideti = $prideti + $_COOKIE['suma'];
-                  echo "Taupyklėje yra: ".$prideti."€";
-                  setcookie("suma", $prideti, time() + (86400*30), "money-box.php" );
-                }
-              }
-            ?>
+            <?php echo "Taupyklėje yra: ".$suma1."€";?>
         </div>
         <div class="col">
-        <?php
-           foreach($items as $name) {
-            echo $name['name'];
-           }
-        ?>
+          <ul>
+            <?php
+              foreach($items as $things) {
+                echo '<li>'.$things['name'].' ', '('.$things['price'].'€) ';
+                echo $things['price'] <= $suma1 ? '<span class="badge bg-success">Įperkama</span></li>' : '<span class="badge bg-danger">Neįperkama</span></li>';
+              }
+            ?>
+          </ul>
         </div>
     </div> 
-</div>
-
-<?php
-?>
-    
+</div>   
 </body>
 </html>
